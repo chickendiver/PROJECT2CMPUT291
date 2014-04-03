@@ -1,0 +1,6 @@
+create second inverse database for retrieve key from data
+
+for list records see set_location for bTree. iterate through for hash table
+
+modify sample rather than start from scratch
+
