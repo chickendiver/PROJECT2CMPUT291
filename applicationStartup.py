@@ -1,1 +1,210 @@
-## CREATE A MAIN MENU INTERFACE HERE
+import sys
+import bsddb3 as bsddb
+import random
+import subprocess
+
+DA_FILE = "/tmp/my_db/chase_db"
+DB_SIZE = 1000
+SEED = 10000000
+
+dbType = None
+db = None
+
+## Create Tables ========================================
+def createHashTable():
+	## Create and populate hash Table
+	print("Creating Hash Table")
+	try:
+		db = bsddb.hashopen(DA_FILE, "w")
+	except:
+		print("DB doesn't exist, creating a new one")
+		db = bsddb.hashopen(DA_FILE, "c")
+	populate(db)
+	return db
+def createBTree():
+	## Create and populate B Tree (see initialLabCode.py for original lab code)
+	print("Creating B Tree")
+	try:
+		db = bsddb.btopen(DA_FILE, "w")
+	except:
+		print("DB doesn't exist, creating a new one")
+		db = bsddb.btopen(DA_FILE, "c")
+	populate(db)
+	return db
+def createIndexFile():
+	## Create and Populate indexFile
+	print("Creating Index File (jking im not doing anything yet)")
+	return
+def destroyDatabase():
+	## Destroys the database if it exists
+	print("Destroying Database")
+	subprocess.call(["rm", "-f", "/tmp/my_db/chase_db"])
+	return
+
+
+## Populate Tables =========================================
+def populate(db):
+	for i in range(100):
+		key = str(i).encode(encoding='UTF-8')
+		value = str(i * i).encode(encoding='UTF-8')
+		if not db.has_key(key):
+			db[key] = value
+	for i in range(75,200):
+		key = str(i).encode(encoding='UTF-8')
+		value = str(i * i * i).encode(encoding='UTF-8')
+		if not db.has_key(key):
+			db[key] = value
+	return
+
+## User Interface for retrieve Functions ====================
+def startRetrieveWithKey():
+	## gets user key and calls retrieveWithKey(key)
+	key = input("Please enter a key to get data: ")
+	records = retrieveWithKey(key)
+	printRecords(records)
+	return
+def startRetrieveWithData():
+	## Gets user data and calls retrieveWithData(data)
+	data = input("Please enter data to get key: ")
+	records = retrieveWithData(data)
+	printRecords(records)
+	return
+def startRetrieveWithRange():
+	## Gets user range and calls retrieveWithRange(keyRange)
+	while(True):
+		keyRange = input("Please enter a key range to get data, enter the first key, followed by a space, followed by the last key [ex: 20 45] : ")
+		keyRange = keyRange.strip()
+		rangeList = keyRange.split(' ')
+		if len(rangeList) != 2:
+			print("invalid format of key range")
+			continue
+		if rangeList[0] > rangeList[1]:
+			print("invalid format of key range")
+			continue
+		break
+
+	if dbType == "hash":
+		records = retrieveWithRangeHash(rangeList[0], rangeList[1])
+	elif dbType == "btree":
+		records = retrieveWithRangeBTree(rangeList[0], rangeList[1])
+	else:
+		print("Set up range search logic for indexFile")
+	printRecords(records)
+	return
+
+def printRecords(records):
+	print("== Records ======")
+	numRecords = len(records)
+	if numRecords > 0:
+		print("Records Retrieved: %d\n" % numRecords)
+	else:
+		print("No Records Retrieved")
+	for record in records:
+		print(record)
+	print("\n=============")
+	return
+
+## Retrieve Functions =======================================
+def retrieveWithKey(key):
+	## Returns Data with given key
+	print("Retrieving Data with for key: %s" % key)
+	values = []
+	key = str(key).encode(encoding='UTF-8')
+	value = db[key]
+	value = value.decode(encoding='UTF-8')
+	values.append(value)
+	return values
+def retrieveWithData(data):
+	## Returns Keys with given data
+	print("Retrieving Key with for data: %s" % data)
+	data = str(data).encode(encoding='UTF-8')
+	#cursor = db.cursor()
+	allItems = db.items()
+	keysList = []
+	for item in allItems:
+		itemData = item[1]
+		if itemData == data:
+			itemKey = item[0].decode(encoding='UTF-8')
+			keysList.append(itemKey)
+			print(itemKey)
+	return keysList
+def retrieveWithRangeBTree(startKey, endKey):
+	## Returns records with key in given range
+	print("Retrieving records in range: %s - %s" % (startKey, endKey))
+	return
+def retrieveWithRangeHash(startKey, endKey):
+	## Returns records with key in given range
+	print("Retrieving records in range: %s - %s" % (startKey, endKey))
+	values = []
+	##	encode start and end keys
+	##	Interate through entire hash database, if key is greater than start and less than end key
+	startKey = str(startKey).encode(encoding='UTF-8')
+	endKey = str(endKey).encode(encoding='UTF-8')	
+
+	for item in db.items():
+		if item[0] >= startKey and item[0] <= endKey:
+			values.append(item[1].decode(encoding='UTF-8'))
+
+	
+	#values = []
+	#for i in range (int(startKey), int(endKey)+1):
+	#	key = str(i).encode(encoding='UTF-8')
+	#	value = db[key]
+	#	value = value.decode(encoding='UTF-8')
+	#	values.append(value)
+	return values
+
+
+## Random and Misc Functions ==============================
+def get_random():
+    return random.randint(0, 63)
+def get_random_char():
+    return chr(97 + random.randint(0, 25))
+
+## Main ===================================================
+def main():
+	global db
+	global dbType
+	#get args
+	dbType = str(sys.argv[1])
+	#perform apporpriate create database statement
+	if dbType.lower() == "btree":
+		db = createBTree()
+	elif dbType.lower() == "hash":
+		db = createHashTable()
+	elif dbType.lower() == "indexfile":
+		db = createIndexFile()
+	else:
+		print("Invalid argument, please run with one of: btree, hash, indexfile")
+		return
+
+	while(True):
+		print("Please Choose from the following options: \n1. Retrieve records with a key\n2. Retrieve records with data\n3. Retrieve records with a range of keys\n4. Destroy Database\n5. Destroy database and quit")
+		while(True):
+			choice = input("[1/2/3/4/5]: ")
+			try:
+				choice = int(choice)
+			except:
+				print("Invalid input, please enter an integer between 1 and 5")
+				continue
+			if choice < 1 or choice > 5:
+				print("Invalid input, please enter an integer between 1 and 5")
+				continue
+			break
+
+		if choice == 1:
+			startRetrieveWithKey()
+		elif choice == 2:
+			startRetrieveWithData()
+		elif choice == 3:
+			startRetrieveWithRange()
+		elif choice == 4:
+			destroyDatabase()
+			# Keep in mind that we shouldnt let the user do anything after they destroy the database. so not sure on logic for here
+		else:
+			break
+
+	destroyDatabase()
+
+if __name__ == "__main__":
+	main()

@@ -1,11 +1,10 @@
-Hash Table:
-	- modify given python program to work with hashtable
-	- perform tests such that data can be entered and retrieved reliably
-	- Determine whether how to retrieve key from data
-		- this will either be with a second reverse hash table or by searching the entire hash table for the data
-	- determine how to "properly" get runtime diagnostics for program. make sure all input and output is formatted as required. 
+To Do:
 
-	- Merge with Bradley and decide what table does what better
-	- Design a combination table
-	- Implement design
+	+	Implement "No Duplicate Keys" logic
+	-	Implement Range search
+		-	range search for Hash Table started but not finished
+		-	range search for B tree (use cursor and get next or something)
+	-	Implement timer
+		-	Timer is to be displayed after a query
 
+	-	Implement Index File
