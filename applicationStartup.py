@@ -44,6 +44,8 @@ def destroyDatabase():
 
 ## Populate Tables =========================================
 def populate(db):
+	# change to be populated with random values instead of these values as specified in assignment
+
 	for i in range(100):
 		key = str(i).encode(encoding='UTF-8')
 		value = str(i * i).encode(encoding='UTF-8')
@@ -60,13 +62,17 @@ def populate(db):
 def startRetrieveWithKey():
 	## gets user key and calls retrieveWithKey(key)
 	key = input("Please enter a key to get data: ")
+	# start timer
 	records = retrieveWithKey(key)
+	# end timer
 	printRecords(records)
 	return
 def startRetrieveWithData():
 	## Gets user data and calls retrieveWithData(data)
 	data = input("Please enter data to get key: ")
+	# start timer
 	records = retrieveWithData(data)
+	# end timer
 	printRecords(records)
 	return
 def startRetrieveWithRange():
@@ -83,6 +89,7 @@ def startRetrieveWithRange():
 			continue
 		break
 
+	# start timer
 	if dbType == "hash":
 		records = retrieveWithRangeHash(rangeList[0], rangeList[1])
 	elif dbType == "btree":
@@ -90,6 +97,7 @@ def startRetrieveWithRange():
 	else:
 		print("Set up range search logic for indexFile")
 	printRecords(records)
+	# end timer
 	return
 
 def printRecords(records):
@@ -138,11 +146,13 @@ def retrieveWithRangeHash(startKey, endKey):
 	values = []
 	##	encode start and end keys
 	##	Interate through entire hash database, if key is greater than start and less than end key
-	startKey = str(startKey).encode(encoding='UTF-8')
-	endKey = str(endKey).encode(encoding='UTF-8')	
+
+	# So Im using numbers for data here but its going to be working on strings... so this logic isn't really correct here
+	# In theory, however, this should be working just fine. The only caveat is whether we should be comparing encoded or decoded keys
+	# From what i got from eric he seems to think we should compare encoded keys, but i think decoded keys makes more sense
 
 	for item in db.items():
-		if item[0] >= startKey and item[0] <= endKey:
+		if item[0].decode(encoding='UTF-8') >= startKey and item[0].decode(encoding='UTF-8') <= endKey:
 			values.append(item[1].decode(encoding='UTF-8'))
 
 	
