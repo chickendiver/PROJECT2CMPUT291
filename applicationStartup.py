@@ -146,16 +146,13 @@ def retrieveWithRangeHash(startKey, endKey):
 	values = []
 	##	encode start and end keys
 	##	Interate through entire hash database, if key is greater than start and less than end key
-<<<<<<< HEAD
 	##  Wondering if encoded keys should be compared here.... since that seems like it would mess up ordering
 	startKey = str(startKey).encode(encoding='UTF-8')
 	endKey = str(endKey).encode(encoding='UTF-8')	
-=======
 
 	# So Im using numbers for data here but its going to be working on strings... so this logic isn't really correct here
 	# In theory, however, this should be working just fine. The only caveat is whether we should be comparing encoded or decoded keys
 	# From what i got from eric he seems to think we should compare encoded keys, but i think decoded keys makes more sense
->>>>>>> chase
 
 	for item in db.items():
 		if item[0].decode(encoding='UTF-8') >= startKey and item[0].decode(encoding='UTF-8') <= endKey:
