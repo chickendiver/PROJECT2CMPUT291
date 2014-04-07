@@ -10,4 +10,7 @@ To Do:
 =============================================================
 
 	-	Implement Index File
+		- Implement second "reversed" database where key/data pairs are reversed
+			- Create this database while creating the initial database
+			- Implement logic to properly handle duplicate keys as this is possible in this scenario
 	-	redirect output to answers file as specified
