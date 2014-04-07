@@ -5,11 +5,13 @@ import subprocess
 import time
 
 DA_FILE = "/tmp/my_db/chase_db"
+INDEX_FILE = "/tmp/my_db/index_file"
 DB_SIZE = 1000
 SEED = 10000000
 
 dbType = None
 db = None
+indexDB = None
 
 ## Create Tables ========================================
 def createHashTable():
@@ -34,12 +36,28 @@ def createBTree():
 	return db
 def createIndexFile():
 	## Create and Populate indexFile
-	print("Creating Index File (jking im not doing anything yet)")
-	return
+	#!# Add flag for duplicate keys
+
+	print("Creating Index File")
+	global indexDB
+	try:
+		db = bsddb.btopen(DA_FILE, "w")
+	except:
+		print("DB doesn't exist, creating a new one")
+		db = bsddb.btopen(DA_FILE, "c")
+	try:
+		indexDB = bsddb.btopen(INDEX_FILE, "w")
+	except:
+		print("DB doesn't exist, creating a new one")
+		indexDB = bsddb.btopen(INDEX_FILE, "c")	
+
+	populateWithIndex(db, indexDB)
+	return db
 def destroyDatabase():
 	## Destroys the database if it exists
 	print("Destroying Database")
 	subprocess.call(["rm", "-f", "/tmp/my_db/chase_db"])
+	subprocess.call(["rm", "-f", "/tmp/my_db/index_file"])
 	return
 
 
@@ -62,17 +80,26 @@ def populate(db):
 		key = key.encode(encoding='UTF-8')
 		value = value.encode(encoding='UTF-8')
 		db[key] = value
+	return
 
-	#for i in range(100):
-	#	key = str(i).encode(encoding='UTF-8')
-	#	value = str(i * i).encode(encoding='UTF-8')
-	#	if not db.has_key(key):
-	#		db[key] = value
-	#for i in range(75,200):
-	#	key = str(i).encode(encoding='UTF-8')
-	#	value = str(i * i * i).encode(encoding='UTF-8')
-	#	if not db.has_key(key):
-	#		db[key] = value
+def populateWithIndex(db, indexDB):
+	## populate both database and indexFile
+	for index in range(DB_SIZE):
+		krng = 64 + get_random()
+		key = ""
+		for i in range(krng):
+			key += str(get_random_char())
+		vrng = 64 + get_random()
+		value = ""
+		for i in range(vrng):
+			value += str(get_random_char())
+		print (key)
+		print (value)
+		print ("")
+		key = key.encode(encoding='UTF-8')
+		value = value.encode(encoding='UTF-8')
+		db[key] = value
+		indexDB[value] = key
 	return
 
 ## User Interface for retrieve Functions ====================
