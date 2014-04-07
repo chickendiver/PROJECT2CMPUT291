@@ -3,6 +3,7 @@ import bsddb3 as bsddb
 import random
 import subprocess
 import time
+import bsddb3
 
 DA_FILE = "/tmp/my_db/chase_db"
 INDEX_FILE = "/tmp/my_db/index_file"
@@ -47,6 +48,7 @@ def createIndexFile():
 		db = bsddb.btopen(DA_FILE, "c")
 	try:
 		indexDB = bsddb.btopen(INDEX_FILE, "w")
+		indexDB.set_flags(bsddb3.DB_DUPSORT)
 	except:
 		print("DB doesn't exist, creating a new one")
 		indexDB = bsddb.btopen(INDEX_FILE, "c")	
