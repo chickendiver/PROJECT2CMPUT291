@@ -1,13 +1,12 @@
 To Do:
 
 	+	Implement "No Duplicate Keys" logic
-	-	Change database population to random of exactly 100,000 (or whatever is specified)
-	-	Implement Range search
-		-	range search for Hash Table started but not finished (see comments in function)
-		-	range search for B tree (use cursor and get next or something)
-	-	Implement timer
-		-	Timer is to be displayed after a query
-	
+	+	Change database population to random of exactly 100,000 (or whatever is specified) 
+	+	Implement Range search
+		+	range search for Hash Table started but not finished (see comments in function)
+		+	range search for B tree (use cursor and get next or something)
+	+	Implement timer
+		+	Timer is to be displayed after a query 
 =============================================================
 
 	-	Implement Index File

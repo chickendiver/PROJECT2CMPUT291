@@ -2,6 +2,7 @@ import sys
 import bsddb3 as bsddb
 import random
 import subprocess
+import time
 
 DA_FILE = "/tmp/my_db/chase_db"
 DB_SIZE = 1000
@@ -46,16 +47,32 @@ def destroyDatabase():
 def populate(db):
 	# change to be populated with random values instead of these values as specified in assignment
 
-	for i in range(100):
-		key = str(i).encode(encoding='UTF-8')
-		value = str(i * i).encode(encoding='UTF-8')
-		if not db.has_key(key):
-			db[key] = value
-	for i in range(75,200):
-		key = str(i).encode(encoding='UTF-8')
-		value = str(i * i * i).encode(encoding='UTF-8')
-		if not db.has_key(key):
-			db[key] = value
+	for index in range(DB_SIZE):
+		krng = 64 + get_random()
+		key = ""
+		for i in range(krng):
+			key += str(get_random_char())
+		vrng = 64 + get_random()
+		value = ""
+		for i in range(vrng):
+			value += str(get_random_char())
+		print (key)
+		print (value)
+		print ("")
+		key = key.encode(encoding='UTF-8')
+		value = value.encode(encoding='UTF-8')
+		db[key] = value
+
+	#for i in range(100):
+	#	key = str(i).encode(encoding='UTF-8')
+	#	value = str(i * i).encode(encoding='UTF-8')
+	#	if not db.has_key(key):
+	#		db[key] = value
+	#for i in range(75,200):
+	#	key = str(i).encode(encoding='UTF-8')
+	#	value = str(i * i * i).encode(encoding='UTF-8')
+	#	if not db.has_key(key):
+	#		db[key] = value
 	return
 
 ## User Interface for retrieve Functions ====================
@@ -63,17 +80,21 @@ def startRetrieveWithKey():
 	## gets user key and calls retrieveWithKey(key)
 	key = input("Please enter a key to get data: ")
 	# start timer
+	start = time.clock()
 	records = retrieveWithKey(key)
 	# end timer
-	printRecords(records)
+	elapsed = (time.clock() - start)
+	printRecords(records, elapsed)
 	return
 def startRetrieveWithData():
 	## Gets user data and calls retrieveWithData(data)
 	data = input("Please enter data to get key: ")
 	# start timer
+	start = time.clock()
 	records = retrieveWithData(data)
 	# end timer
-	printRecords(records)
+	elapsed = (time.clock() - start)
+	printRecords(records, elapsed)
 	return
 def startRetrieveWithRange():
 	## Gets user range and calls retrieveWithRange(keyRange)
@@ -90,25 +111,29 @@ def startRetrieveWithRange():
 		break
 
 	# start timer
+	start = time.clock()
 	if dbType == "hash":
 		records = retrieveWithRangeHash(rangeList[0], rangeList[1])
 	elif dbType == "btree":
 		records = retrieveWithRangeBTree(rangeList[0], rangeList[1])
 	else:
 		print("Set up range search logic for indexFile")
-	printRecords(records)
-	# end timer
+	elapsed = (time.clock() - start)
+	printRecords(records, elapsed)
 	return
 
-def printRecords(records):
+def printRecords(records, elapsed):
 	print("== Records ======")
 	numRecords = len(records)
+	elapsedTime = elapsed
 	if numRecords > 0:
-		print("Records Retrieved: %d\n" % numRecords)
+		print("Records Retrieved: %d" % numRecords)
 	else:
 		print("No Records Retrieved")
+	print("Elapsed Time: " + str(elapsed) + "\n")
 	for record in records:
 		print(record)
+		print("")
 	print("\n=============")
 	return
 
@@ -139,7 +164,17 @@ def retrieveWithData(data):
 def retrieveWithRangeBTree(startKey, endKey):
 	## Returns records with key in given range
 	print("Retrieving records in range: %s - %s" % (startKey, endKey))
-	return
+	values = []
+	## So i belive the way to do this is simply get the data associated with the start key, and keep calling "get next" till the key is greater than the end key
+	encodedStart = str(startKey).encode(encoding='UTF-8')
+	encodedEnd = str(endKey).encode(encoding='UTF-8')
+
+	# This doesn't work because the start range wont be key, we need the first key after the start key, use set_range() to achieve this
+	current = db.set_location(encodedStart)
+	while(current[0].decode(encoding='UTF-8') < endKey):
+		values.append(current[1].decode(encoding='UTF-8'))
+		current = db.next()
+	return values
 def retrieveWithRangeHash(startKey, endKey):
 	## Returns records with key in given range
 	print("Retrieving records in range: %s - %s" % (startKey, endKey))
@@ -147,8 +182,8 @@ def retrieveWithRangeHash(startKey, endKey):
 	##	encode start and end keys
 	##	Interate through entire hash database, if key is greater than start and less than end key
 	##  Wondering if encoded keys should be compared here.... since that seems like it would mess up ordering
-	startKey = str(startKey).encode(encoding='UTF-8')
-	endKey = str(endKey).encode(encoding='UTF-8')	
+	#startKey = str(startKey).encode(encoding='UTF-8')
+	#endKey = str(endKey).encode(encoding='UTF-8')	
 
 	# So Im using numbers for data here but its going to be working on strings... so this logic isn't really correct here
 	# In theory, however, this should be working just fine. The only caveat is whether we should be comparing encoded or decoded keys
@@ -162,9 +197,9 @@ def retrieveWithRangeHash(startKey, endKey):
 
 ## Random and Misc Functions ==============================
 def get_random():
-    return random.randint(0, 63)
+	return random.randint(0, 63)
 def get_random_char():
-    return chr(97 + random.randint(0, 25))
+	return chr(97 + random.randint(0, 25))
 
 ## Main ===================================================
 def main():
@@ -184,7 +219,7 @@ def main():
 		return
 
 	while(True):
-		print("Please Choose from the following options: \n1. Retrieve records with a key\n2. Retrieve records with data\n3. Retrieve records with a range of keys\n4. Destroy Database\n5. Destroy database and quit")
+		print("Please Choose from the following options: \n1. Retrieve records with a key\n2. Retrieve key with data\n3. Retrieve records with a range of keys\n4. Destroy Database\n5. Destroy database and quit")
 		while(True):
 			choice = input("[1/2/3/4/5]: ")
 			try:
