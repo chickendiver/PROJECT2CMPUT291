@@ -120,7 +120,10 @@ def startRetrieveWithData():
 	data = input("Please enter data to get key: ")
 	# start timer
 	start = time.clock()
-	records = retrieveWithData(data)
+	if dbType == 'indexfile':
+		records = retrieveWithDataFromIndex(data)
+	else:
+		records = retrieveWithData(data)
 	# end timer
 	elapsed = (time.clock() - start)
 	printRecords(records, elapsed)
@@ -190,6 +193,16 @@ def retrieveWithData(data):
 			keysList.append(itemKey)
 			print(itemKey)
 	return keysList
+def retrieveWithDataFromIndex(data):
+	## Returns Keys with given data
+	#!# Add functionality for miltiple keys
+	print("Retrieving Key with for data: %s" % data)
+	values = []
+	key = str(data).encode(encoding='UTF-8')
+	value = indexDB[key]
+	value = value.decode(encoding='UTF-8')
+	values.append(value)
+	return values
 def retrieveWithRangeBTree(startKey, endKey):
 	## Returns records with key in given range
 	print("Retrieving records in range: %s - %s" % (startKey, endKey))
@@ -222,7 +235,6 @@ def retrieveWithRangeHash(startKey, endKey):
 		if item[0].decode(encoding='UTF-8') >= startKey and item[0].decode(encoding='UTF-8') <= endKey:
 			values.append(item[1].decode(encoding='UTF-8'))
 	return values
-
 
 ## Random and Misc Functions ==============================
 def get_random():
