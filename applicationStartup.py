@@ -169,10 +169,16 @@ def printRecords(records, elapsed):
 	else:
 		print("No Records Retrieved")
 	print("Elapsed Time: " + str(elapsed) + "\n")
+	
+	answersFile = open('answers','a')
 	for record in records:
 		print(record)
 		print("")
+		
+		answersFile.write(key + "\n" + record + "\n")	
+					
 	print("\n=============")
+	answersFile.close()	
 	return
 
 ## Retrieve Functions =======================================
@@ -264,7 +270,8 @@ def main():
 	else:
 		print("Invalid argument, please run with one of: btree, hash, indexfile")
 		return
-
+	
+	answersFile = open('answers','w')
 	while(True):
 		print("Please Choose from the following options: \n1. Create and populate the database \n2. Retrieve records with a key\n3. Retrieve key with data\n4. Retrieve records with a range of keys\n5. Destroy Database\n6. Quit")
 		while(True):
@@ -299,6 +306,7 @@ def main():
 			break
 
 	destroyDatabase()
+	answersFile.close()
 
 if __name__ == "__main__":
 	main()
