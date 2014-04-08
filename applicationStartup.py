@@ -54,9 +54,8 @@ def createIndexFile():
 		##indexDB.set_flags(bsddb3.DB_DUPSORT)
 		indexDB = indexDatabase.cursor()
 	except:
-		#print("DB doesn't exist, creating a new one")
-		print("Index file cannot be created.")
-		#indexDB = bsddb.btopen(INDEX_FILE, "c")	
+		print("DB doesn't exist, creating a new one")
+		indexDB = bsddb.btopen(INDEX_FILE, "c")	
 
 	populateWithIndex(db, indexDB)
 	return db
@@ -91,8 +90,6 @@ def populate(db):
 
 def populateWithIndex(db, indexDB):
 	## populate both database and indexFile
-
-
 	for index in range(DB_SIZE):
 		krng = 64 + get_random()
 		key = ""
@@ -107,17 +104,8 @@ def populateWithIndex(db, indexDB):
 		print ("")
 		key = key.encode(encoding='UTF-8')
 		value = value.encode(encoding='UTF-8')
-		db.put(key, value)
-		database.put(value,key)
-
-	db['apple'.encode(encoding='UTF-8')] = 'red'.encode(encoding='UTF-8')
-	db['strawberry'.encode(encoding='UTF-8')] = 'red'.encode(encoding='UTF-8')
-	db['raspberry'.encode(encoding='UTF-8')] = 'red'.encode(encoding='UTF-8')
-
-	indexDB['red'.encode(encoding='UTF-8')] = 'apple'.encode(encoding='UTF-8')
-	indexDB['red'.encode(encoding='UTF-8')] = 'strawberry'.encode(encoding='UTF-8')
-	indexDB['red'.encode(encoding='UTF-8')] = 'raspberry'.encode(encoding='UTF-8')
-
+		db[key] = value
+		indexDB[value] = key
 	return
 
 ## User Interface for retrieve Functions ====================
@@ -212,20 +200,14 @@ def retrieveWithData(data):
 			print(itemKey)
 	return keysList
 def retrieveWithDataFromIndex(data):
-
-	global indexDB
 	## Returns Keys with given data
 	#!# Add functionality for miltiple keys
 	print("Retrieving Key with for data: %s" % data)
 	values = []
 	key = str(data).encode(encoding='UTF-8')
-	current = indexDB.set_location(key)
-	while(current):
-		values.append(current[1].decode(encoding='UTF-8'))
-		current = indexDB.next_dup()
-	#value = indexDB[key]
-	#value = value.decode(encoding='UTF-8')
-	#values.append(value)
+	value = indexDB[key]
+	value = value.decode(encoding='UTF-8')
+	values.append(value)
 	return values
 def retrieveWithRangeBTree(startKey, endKey):
 	## Returns records with key in given range
