@@ -167,18 +167,27 @@ def startRetrieveWithRange():
 	if dbType == "hash":
 		try:
 			records = retrieveWithRangeHash(rangeList[0], rangeList[1])
+			if len(records) > 200 or len(records) < 100:
+				print ("Too little or too few records found")
+				startRetrieveWithRange()
 		except:
 			print("\nInvalid Key\n")
 			return
 	elif dbType == "btree":
 		try:
 			records = retrieveWithRangeBTree(rangeList[0], rangeList[1])
+			if len(records) > 200 or len(records) < 100:
+				print ("Too little or too few records found")
+				startRetrieveWithRange()
 		except:
 			print("\nInvalid Key\n")
 			return
 	elif dbType == "indexfile":
 		try:
 			records = retrieveWithRangeBTree(rangeList[0], rangeList[1])
+			if len(records) > 200 or len(records) < 100:
+				print ("Too little or too few records found")
+				startRetrieveWithRange()
 		except:
 			print("\nInvalid Key\n")
 			return
