@@ -152,8 +152,10 @@ def startRetrieveWithRange():
 		records = retrieveWithRangeHash(rangeList[0], rangeList[1])
 	elif dbType == "btree":
 		records = retrieveWithRangeBTree(rangeList[0], rangeList[1])
+	elif dbType == "indexfile":
+		records = retrieveWithRangeBTree(rangeList[0], rangeList[1])
 	else:
-		print("Set up range search logic for indexFile")
+		print("Sorry, something has gone wrong")
 	elapsed = (time.clock() - start)
 	printRecords(records, elapsed)
 	return
