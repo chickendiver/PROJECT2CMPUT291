@@ -112,9 +112,14 @@ def populateWithIndex(db, indexDB):
 def startRetrieveWithKey():
 	## gets user key and calls retrieveWithKey(key)
 	key = input("Please enter a key to get data: ")
+	records = []
 	# start timer
 	start = time.clock()
-	records = retrieveWithKey(key)
+	try:
+		records = retrieveWithKey(key)
+	except:
+		print("\nInvalid Key\n")
+		return
 	# end timer
 	elapsed = (time.clock() - start)
 	printRecords(records, elapsed)
@@ -122,20 +127,30 @@ def startRetrieveWithKey():
 def startRetrieveWithData():
 	## Gets user data and calls retrieveWithData(data)
 	data = input("Please enter data to get key: ")
+	records = []
 	# start timer
 	start = time.clock()
 	if dbType == 'indexfile':
-		records = retrieveWithDataFromIndex(data)
+		try:
+			records = retrieveWithDataFromIndex(data)
+		except:
+			print("\nInvalid Key\n")
+			return
 	else:
-		records = retrieveWithData(data)
+		try:
+			records = retrieveWithData(data)
+		except:
+			print("\nInvalid Key\n")
+			return
 	# end timer
 	elapsed = (time.clock() - start)
 	printRecords(records, elapsed)
 	return
 def startRetrieveWithRange():
 	## Gets user range and calls retrieveWithRange(keyRange)
+	#global dbType
 	while(True):
-		keyRange = input("Please enter a key range to get data, enter the first key, followed by a space, followed by the last key [ex: 20 45] : ")
+		keyRange = input("Please enter a key range to get data, enter the first key, followed by a space, followed by the last key [ex: aa bb] : ")
 		keyRange = keyRange.strip()
 		rangeList = keyRange.split(' ')
 		if len(rangeList) != 2:
@@ -146,22 +161,37 @@ def startRetrieveWithRange():
 			continue
 		break
 
+	records = []
 	# start timer
 	start = time.clock()
 	if dbType == "hash":
-		records = retrieveWithRangeHash(rangeList[0], rangeList[1])
+		try:
+			records = retrieveWithRangeHash(rangeList[0], rangeList[1])
+		except:
+			print("\nInvalid Key\n")
+			return
 	elif dbType == "btree":
-		records = retrieveWithRangeBTree(rangeList[0], rangeList[1])
+		try:
+			records = retrieveWithRangeBTree(rangeList[0], rangeList[1])
+		except:
+			print("\nInvalid Key\n")
+			return
 	elif dbType == "indexfile":
-		records = retrieveWithRangeBTree(rangeList[0], rangeList[1])
+		try:
+			records = retrieveWithRangeBTree(rangeList[0], rangeList[1])
+		except:
+			print("\nInvalid Key\n")
+			return
 	else:
 		print("Sorry, something has gone wrong")
+		print(dbType)
+		records = []
 	elapsed = (time.clock() - start)
 	printRecords(records, elapsed)
 	return
 
 def printRecords(records, elapsed):
-	print("== Records ======")
+	print("\n== Records ======")
 	numRecords = len(records)
 	elapsedTime = elapsed
 	if numRecords > 0:
@@ -259,7 +289,7 @@ def main():
 	global db
 	global dbType
 	#get args
-	dbType = str(sys.argv[1])
+	dbType = str(sys.argv[1]).lower()
 	#perform apporpriate create database statement
 	if dbType.lower() == "btree":
 		pass
