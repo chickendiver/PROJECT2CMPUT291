@@ -176,18 +176,12 @@ def startRetrieveWithRange():
 	elif dbType == "btree":
 		try:
 			records = retrieveWithRangeBTree(rangeList[0], rangeList[1])
-			if len(records) > 200 or len(records) < 100:
-				print ("Too little or too few records found")
-				startRetrieveWithRange()
 		except:
 			print("\nInvalid Key\n")
 			return
 	elif dbType == "indexfile":
 		try:
 			records = retrieveWithRangeBTree(rangeList[0], rangeList[1])
-			if len(records) > 200 or len(records) < 100:
-				print ("Too little or too few records found")
-				startRetrieveWithRange()
 		except:
 			print("\nInvalid Key\n")
 			return
@@ -200,6 +194,7 @@ def startRetrieveWithRange():
 	return
 
 def printRecords(key, records, elapsed, recordType):
+	elapsed = elapsed * 1000000
 	print("\n== Records ======")
 		
 	numRecords = len(records)
