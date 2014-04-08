@@ -1,0 +1,44 @@
+Cmput 291 Project 2
+	By Chase McCarty and Bradley Poulette
+
+
+
+	Main Menu:
+
+		From the main menu, the user is presented with 6 options.
+
+		1) Create and populate the database:
+			This option creates and populates a new database based on the command line argument passed during the initial execution of the program
+		2) Retrieve records with a key:
+			This option is executed the same for all databases and merely treates the database as a dictionary to retrieve the key. 
+		3) Retrieve key with data:
+			For both hash and B tree the entire tree is traversed, attempting to match given data to found data, and return the appropriate key. 
+			For indexfile the indexfile is traversed using the data as a key, and the returned "data" is infact the key requested.
+		4) Retrieve Records with a range of keys: 
+			For range search one of two possible implementations are executed depending on database type. For hash table the entire table is traversed, returning data with key values both larger or equal to startKey and smaller or equal to endKey. For both B tree and indexfile the key/data pair larger than or equal to startKey is navigated to and returned. Using the db.next() function all data is returned until the key is larger than endKey. 
+		5) Destroy Database:
+			Both database and indexfile (if created) are destroyed
+		6)Quit:
+			Destroys the database and quits
+
+	IndexFile:
+
+		When the argument for indexfile is passed two databases rather than one are created. The first database created is a B tree, the second database created is also a B tree, but with flags present that allow for duplicate keys. The second B tree is populated reverse to the first, such that a key/data pair of the first will be entered as a data/key pair into the second B tree. This reduces retrieval of key from data to time similar of retrieving data from key.
+
+
+	Timing (average over 5 tests):	
+
+		Hash Table 
+		| Key Search: 0.0s 
+		| Data Search: 0.0166666666666666443s  
+		| Range Search: 0.013333333333333345s
+
+		B Tree 
+		| Key search: 0.0s 
+		| Data search: 0.020000000000000135s 
+		| Range Search: 0.0s
+
+		IndexFile
+		| Key Search: 0.0s
+		| Data Search: 0.0s
+		| Range Search: 0.0s
