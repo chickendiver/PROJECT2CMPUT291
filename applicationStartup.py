@@ -256,38 +256,45 @@ def main():
 	dbType = str(sys.argv[1])
 	#perform apporpriate create database statement
 	if dbType.lower() == "btree":
-		db = createBTree()
+		pass
 	elif dbType.lower() == "hash":
-		db = createHashTable()
+		pass
 	elif dbType.lower() == "indexfile":
-		db = createIndexFile()
+		pass
 	else:
 		print("Invalid argument, please run with one of: btree, hash, indexfile")
 		return
 
 	while(True):
-		print("Please Choose from the following options: \n1. Retrieve records with a key\n2. Retrieve key with data\n3. Retrieve records with a range of keys\n4. Destroy Database\n5. Destroy database and quit")
+		print("Please Choose from the following options: \n1. Create and populate the database \n2. Retrieve records with a key\n3. Retrieve key with data\n4. Retrieve records with a range of keys\n5. Destroy Database\n6. Quit")
 		while(True):
-			choice = input("[1/2/3/4/5]: ")
+			choice = input("[1/2/3/4/5/6]: ")
 			try:
 				choice = int(choice)
 			except:
 				print("Invalid input, please enter an integer between 1 and 5")
 				continue
-			if choice < 1 or choice > 5:
+			if choice < 1 or choice > 6:
 				print("Invalid input, please enter an integer between 1 and 5")
 				continue
 			break
 
 		if choice == 1:
-			startRetrieveWithKey()
+			if dbType.lower() == "btree":
+				db = createBTree()
+			elif dbType.lower() == "hash":
+				db = createHashTable()
+			elif dbType.lower() == "indexfile":
+				db = createIndexFile()
 		elif choice == 2:
-			startRetrieveWithData()
+			startRetrieveWithKey()
 		elif choice == 3:
-			startRetrieveWithRange()
+			startRetrieveWithData()
 		elif choice == 4:
+			startRetrieveWithRange()
+		elif choice == 5:
 			destroyDatabase()
-			# Keep in mind that we shouldnt let the user do anything after they destroy the database. so not sure on logic for here
+			
 		else:
 			break
 
