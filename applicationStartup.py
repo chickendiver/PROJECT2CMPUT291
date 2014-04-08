@@ -122,7 +122,7 @@ def startRetrieveWithKey():
 		return
 	# end timer
 	elapsed = (time.clock() - start)
-	printRecords(records, elapsed)
+	printRecords(key, records, elapsed, "KEY")
 	return
 def startRetrieveWithData():
 	## Gets user data and calls retrieveWithData(data)
@@ -144,7 +144,7 @@ def startRetrieveWithData():
 			return
 	# end timer
 	elapsed = (time.clock() - start)
-	printRecords(records, elapsed)
+	printRecords(records, data, elapsed, "DATA")
 	return
 def startRetrieveWithRange():
 	## Gets user range and calls retrieveWithRange(keyRange)
@@ -187,11 +187,12 @@ def startRetrieveWithRange():
 		print(dbType)
 		records = []
 	elapsed = (time.clock() - start)
-	printRecords(records, elapsed)
+	printRecords(keyRange, records, elapsed, "RANGE")
 	return
 
-def printRecords(records, elapsed):
+def printRecords(key, records, elapsed, recordType):
 	print("\n== Records ======")
+		
 	numRecords = len(records)
 	elapsedTime = elapsed
 	if numRecords > 0:
@@ -201,11 +202,33 @@ def printRecords(records, elapsed):
 	print("Elapsed Time: " + str(elapsed) + "\n")
 	
 	answersFile = open('answers','a')
-	for record in records:
-		print(record)
-		print("")
-		
-		answersFile.write(key + "\n" + record + "\n")	
+
+	if recordType == "DATA":
+		for keys in key:
+			print(keys)
+			print("")
+
+			answersFile.write(keys + "\n" + records + "\n\n")
+	
+	elif recordType == "KEY":
+		for record in records:
+			print(record)
+			print("")
+	
+			answersFile.write(key + "\n" + record + "\n\n")
+
+	elif recordType == "RANGE":
+
+		for record in records:
+			print(record)
+			print("")
+			
+			if dbType.lower() == "btree" or dbType.lower() == "hash":
+				key = retrieveWithData(record)
+			if dbType.lower() == "indexfile":
+				key = retrieveWithDataFromIndex(record)
+			
+			answersFile.write(key[0] + "\n" + record + "\n\n")
 					
 	print("\n=============")
 	answersFile.close()	
@@ -214,7 +237,7 @@ def printRecords(records, elapsed):
 ## Retrieve Functions =======================================
 def retrieveWithKey(key):
 	## Returns Data with given key
-	print("Retrieving Data with for key: %s" % key)
+	print("Retrieving Data for key: %s" % key)
 	values = []
 	key = str(key).encode(encoding='UTF-8')
 	value = db[key]
@@ -223,7 +246,7 @@ def retrieveWithKey(key):
 	return values
 def retrieveWithData(data):
 	## Returns Keys with given data
-	print("Retrieving Key with for data: %s" % data)
+	##print("Retrieving Key for data: %s" % data)
 	data = str(data).encode(encoding='UTF-8')
 	#cursor = db.cursor()
 	allItems = db.items()
@@ -238,7 +261,7 @@ def retrieveWithData(data):
 def retrieveWithDataFromIndex(data):
 	## Returns Keys with given data
 	#!# Add functionality for miltiple keys
-	print("Retrieving Key with for data: %s" % data)
+	##print("Retrieving Key with for data: %s" % data)
 	values = []
 	key = str(data).encode(encoding='UTF-8')
 	value = indexDB[key]
